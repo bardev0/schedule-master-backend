@@ -7,6 +7,7 @@ const PORT = 2345;
 let app: Express = express();
 app.use(cors());
 app.use(express.json());
+
 let tempUsers: Array<TUserConsumer> = [
     {
         name: "greg",
@@ -24,6 +25,16 @@ let tempUsers: Array<TUserConsumer> = [
         surname: "strab",
         id: "432iiiOd_32",
     },
+    {
+        name: "Allegro",
+        role: "consumer",
+        email: "allegro@gmail.com",
+        hourly: 232,
+        surname: "Client",
+        id: "7778888_ghz",
+    },
+    
+    
 ];
 
 app.get("/userList", (req, res) => {
@@ -36,13 +47,13 @@ app.post("/findUser", (req, res) => {
     console.log(req.body);
     let userId = req.body.userId;
     let obj = tempUsers.find((o) => o.id === userId);
-    console.log("obj retrived " + obj?.name + "...");
-    res.send(obj);
+    console.log(obj);
+    res.json(obj);
 });
 
 app.post("/modifyUser", (req, res) => {
-    let newUser = req.body
-})
-
+    console.log(req.body);
+    res.json({ type: "ok" });
+});
 
 app.listen(PORT, () => console.log(`server started on ${PORT}`));
