@@ -83,7 +83,7 @@ let exampleListGrafikow: Array<TGrafik> = [
     },
     {
         id: 3,
-        status: "active",
+        status: "closed",
         start: new Date("2023-09-01"),
         end: new Date("2023-12-31")
     }
@@ -95,6 +95,66 @@ app.get("/scheaduleList", (req, res) => {
     res.json(exampleListGrafikow)
 })
 
+app.post("/changeStatus", (req, res) => {
+    let index = exampleListGrafikow.findIndex( (e) => e.id == req.body.idG )
+    exampleListGrafikow[index].status = "closed"
+    res.json({status: "ok"})
+})
+
+app.post("/addSchedule", (req, res) => {
+    let lastIdOfG
+    if (exampleListGrafikow.length == 0) {
+        lastIdOfG = 1
+    } else {
+    lastIdOfG = exampleListGrafikow[exampleListGrafikow.length - 1].id + 1
+    }
+    let newG : TGrafik = {
+        id: lastIdOfG,
+        status: "active",
+        start: new Date(req.body.start),
+        end: new Date(req.body.end)
+    }
+    console.log(newG)
+    exampleListGrafikow.push(newG)
+    res.json(newG)
+})
+
+app.get('/convertShiftsToActive', (req, res) => {
+    let lastGrafik = exampleListGrafikow[exampleListGrafikow.length - 1]
+    let datesArray: Array<Date> = []
+    console.log(lastGrafik)
+    if (lastGrafik.status !== "active") {
+        res.json({status: "ostatni grafik nie jest juz aktywny"})
+    } else {
+        for(let startingDate = lastGrafik.start;
+            startingDate <= lastGrafik.end;
+            startingDate.setDate(startingDate.getDate() + 1))
+            {
+                datesArray.push(new Date(startingDate))
+            }
+} 
+// console.log(datesArray) -> works! 
+datesArray.map( (date) => {
+    mainUserArray[0][date.getMonth()].map((week: any) => { week.map( (day: any) => {
+        if (day !== undefined) {
+            if (day.yearNum == getNumberOfDay(date)) {
+                if (day.proposedShifts !== undefined) {
+                    let clones = [...day.proposedShifts]
+                    console.log(clones)
+                    day.proposedShifts = undefined
+                    day.actualShifts = [...clones]
+                }
+            }
+        }
+    } ) })
+})})
+
+app.post("/removeSchedule", (req, res) => {
+console.log(req.body)
+let index = exampleListGrafikow.findIndex( (e) => e.id === req.body.idG )
+exampleListGrafikow.splice(index,1)
+res.json({status: "ok"})
+})
 app.post("/convertShiftsPtoA", (req, res) => {
     console.log(req.body)
     let testOb = {
