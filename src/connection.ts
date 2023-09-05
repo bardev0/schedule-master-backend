@@ -7,8 +7,30 @@ const URI = `mongodb+srv://${mongo_username}:${mongo_password}@cluster0.nsckr5l.
 const cliet = new MongoClient(URI);
 const db = cliet.db("ShiftArtist");
 
+const allCol = {
+    loggedUsers: "LoggedUsers",
+    users: "Users",
+    userData: "UserData"
+}
+
+export async function createBlancMatrix(id: string) {
+    const col = db.collection(allCol.userData)
+    let allUserGrafikData = {
+        user: id,
+        data: [1,2,3,4,5]
+    }
+    const q = col.insertOne({user: allUserGrafikData.user, data: allUserGrafikData.data})
+    const result = await q
+
+    return({data: allUserGrafikData, result: result})
+}
+
+export async function fetchUserData(id: string) {
+    const col = db.collection(allCol.userData)
+}
+
 export async function findIfUserIsLoggedIn(id: string) {
-    const col = db.collection("LoggedUsers");
+    const col = db.collection(allCol.loggedUsers);
     const query = col.findOne({ id: id });
     const res = await query;
     console.log(res);
@@ -20,7 +42,7 @@ export async function findIfUserIsLoggedIn(id: string) {
 }
 
 export async function removeFromLogged(id: string) {
-    const col = db.collection("LoggedUsers");
+    const col = db.collection(allCol.loggedUsers);
     const query = col.findOneAndDelete({ id: id });
     const res = await query;
     return res;
@@ -31,7 +53,7 @@ export async function validateLogin(
     password: string,
     ip?: string
 ) {
-    const col = db.collection("Users");
+    const col = db.collection(allCol.users);
     const que = col.findOne({ email: email });
     const user = await que;
     if (user?.password == password) {
@@ -44,7 +66,7 @@ export async function validateLogin(
         let isLoged = await findIfUserIsLoggedIn(user.id);
         console.log(isLoged);
         if (isLoged == false) {
-            let newCol = db.collection("LoggedUsers");
+            let newCol = db.collection(allCol.loggedUsers);
             let res = newCol.insertOne({
                 id: user.id,
                 dateLoggedIn: new Date(),
@@ -60,9 +82,10 @@ export async function validateLogin(
             console.log("user replaced");
         }
         // let newQ = newCol.insertO})
-        return { loginStatus: "succes" };
+        return { status: "succes",
+                id: user.id};
     } else {
-        return { loginStatus: "failed" };
+        return { status: "failed" };
     }
 }
 

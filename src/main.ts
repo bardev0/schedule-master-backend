@@ -6,7 +6,7 @@ import { TNotesObj } from "../../grafik/src/utils/types";
 import { makeid } from "./utils";
 import { createYearMatrix, shapeYearMatrix } from "../../grafik-src/utils";
 
-import { addMainUser, removeFromLogged, validateLogin } from "./connection";
+import { addMainUser, createBlancMatrix, removeFromLogged, validateLogin } from "./connection";
 
 const PORT = 2345;
 let app: Express = express();
@@ -88,6 +88,10 @@ let exampleListGrafikow: Array<TGrafik> = [
 // App przy zaladowaniu wyciągnie userName z Local storage i wysle do servera pytanie
 // app.post("/isUserLoggedIn")
 
+app.post("/debug", async (req, res) => {
+    
+    res.json(await createBlancMatrix(req.body.id))
+})
 // ip adress jest ipv6
 app.post("/validateMainUser", async (req, res) => {
     const ipAddresses = req.socket.remoteAddress;
