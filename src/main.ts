@@ -1,10 +1,13 @@
 import { Express, Request, Response } from "express";
 import express = require("express");
 import cors = require("cors");
-import { TUserConsumer } from "./types";
+import { TLoginCredentials, TRegisterData, TUserConsumer } from "./types";
 import { TNotesObj } from "../../grafik/src/utils/types";
 import { makeid } from "./utils";
 import { createYearMatrix, shapeYearMatrix } from "../../grafik-src/utils";
+
+import { addMainUser, removeFromLogged, validateLogin } from "./connection";
+
 const PORT = 2345;
 let app: Express = express();
 app.use(cors());
@@ -82,6 +85,42 @@ let exampleListGrafikow: Array<TGrafik> = [
         end: new Date("2023-12-31"),
     },
 ];
+// App przy zaladowaniu wyciągnie userName z Local storage i wysle do servera pytanie
+// app.post("/isUserLoggedIn")
+
+// ip adress jest ipv6
+app.post("/validateMainUser", async (req, res) => {
+    const ipAddresses = req.socket.remoteAddress;
+    let credentials: TLoginCredentials = req.body;
+    let userStatus = await validateLogin(
+        credentials.email,
+        credentials.password,
+        ipAddresses
+    );
+    res.json(userStatus);
+});
+
+app.post("/removeLoggedUser", async (req, res) => {
+    console.log(req.body);
+    const result = await removeFromLogged(req.body.userId);
+    console.log(result);
+    res.json({ status: "user current login removed" });
+});
+
+app.post("/addMainUser", async (req, res) => {
+    let newUserData: TRegisterData = {
+        email: req.body.email,
+        password: req.body.password,
+        promoCode: req.body.promoCode,
+    };
+    let status = await addMainUser(
+        newUserData.password,
+        newUserData.email,
+        newUserData.promoCode
+    );
+    console.log(status);
+    res.json(status);
+});
 
 app.get("/scheaduleList", (req, res) => {
     console.log(req.body);
