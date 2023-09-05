@@ -18,3 +18,27 @@ export type TRegisterData = {
     password: string;
     promoCode: string;
 };
+
+export type TDay = {
+    note? : string
+    actualShifts?: Array<any>;
+    isWorking: boolean;
+    proposedShifts?: Array<any>
+    offs?: Array<any>;
+    day: string;
+    dayNum: number;
+    monthId: number;
+    typeOfDay: string;
+    yearId: number;
+    yearNum: number;
+};
+
+export type TModShiftObj = {
+    user: string,
+    days: Array<{user: string, location: string}>
+}
+
+export type TShiftModData = {
+    user:string,
+    location: string
+}

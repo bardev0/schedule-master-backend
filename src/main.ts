@@ -4,7 +4,7 @@ import cors = require("cors");
 import { TLoginCredentials, TRegisterData, TUserConsumer } from "./types";
 import { TNotesObj } from "../../grafik/src/utils/types";
 import { makeid } from "./utils";
-import { createYearMatrix, shapeYearMatrix } from "../../grafik-src/utils";
+import { createYearMatrix, shapeYearMatrix } from "./utils"
 
 import { addMainUser, createBlancMatrix, removeFromLogged, validateLogin } from "./connection";
 
