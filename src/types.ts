@@ -21,6 +21,7 @@ export type TRegisterData = {
     email: string;
     password: string;
     promoCode: string;
+    companyName: string;
 };
 
 export type TDay = {

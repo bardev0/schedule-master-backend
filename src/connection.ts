@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import { makeid, createYearMatrix, shapeYearMatrix } from "./utils";
+import { TRegisterData } from "./types";
 // moveToEnv
 let mongo_username = "greg1111";
 let mongo_password = "Rgbi5QPJQCck3eox";
@@ -24,11 +25,11 @@ export async function changeFirstLoginStatus(id: string) {
 
 export async function createBlancMatrix(id: string) {
     let currYear = new Date().getFullYear()
-    let tenYmatrix = []
+    let tenYmatrix :any = {}
     for (let i = currYear; i < currYear +10; i++) {
         console.log(i)
-        let oneYarray = createYearMatrix(i)
-        tenYmatrix.push(shapeYearMatrix(oneYarray, i))
+        let oneYarray = shapeYearMatrix(createYearMatrix(i), i)
+        tenYmatrix[i] = oneYarray
     }
     const col = db.collection(allCol.userData)
     let allUserGrafikData = {
@@ -45,12 +46,7 @@ export async function findUser(id: string) {
         const col = db.collection(allCol.users)
         const que = col.findOne({id: id})
         const res = await que
-        let passData = {
-            id: res?.id,
-            email: res?.email,
-            hasLoggedIn: res?.hasLoggedIn
-        }
-        return passData
+        return {...res}
 }
 
 export async function fetchUserData(id: string) {
@@ -116,14 +112,11 @@ export async function validateLogin(
     }
 }
 
-export async function addMainUser(
-    password: string,
-    email: string,
-    promoCode: string
-) {
+export async function addMainUser(ob: TRegisterData)
+{   let data: TRegisterData = {...ob}
     let newID = makeid(15);
     const col = db.collection("Users");
-    let que = col.findOne({ email: email });
+    let que = col.findOne({ email: data.email });
     let queId = col.findOne({ id: newID });
     let res1 = await que;
     let res2 = await queId;
@@ -132,9 +125,10 @@ export async function addMainUser(
         // idz dalej
         let neqQue = col.insertOne({
             id: newID,
-            email: email,
-            password: password,
-            promoCode: promoCode,
+            email: data.email,
+            password: data.password,
+            promoCode: data.promoCode,
+            companyName: data.companyName,
             hasLoggedIn: false
         });
         let res = await neqQue;

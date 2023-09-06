@@ -95,7 +95,7 @@ app.post("/findMainUser", async (req, res) => {
 
 app.post("/debug", async (req, res) => {
     console.log(req.body)
-    let data = await fetchUserData(req.body.id)
+    let data = await findUser(req.body.id)
     res.json(data)
 })
 
@@ -120,20 +120,27 @@ app.post("/removeLoggedUser", async (req, res) => {
 });
 
 app.post("/addMainUser", async (req, res) => {
-    let newUserData: TRegisterData = {
-        email: req.body.email,
-        password: req.body.password,
-        promoCode: req.body.promoCode,
-    };
-    let status = await addMainUser(
-        newUserData.password,
-        newUserData.email,
-        newUserData.promoCode
-    );
+
+    let newData: TRegisterData = {...req.body}
+    let status = await addMainUser({...newData});
     console.log(status);
     res.json(status);
 });
 
+app.post("/fetchMatrix", async (req, res) => {
+    console.log(req.body)
+    if ((await findUser(req.body.id)).hasLoggedIn == false) {
+        createBlancMatrix(req.body.id)
+        changeFirstLoginStatus(req.body.id)
+        let data = await fetchUserData(req.body.id)
+        res.json({...data})
+    } else {
+        let data = await fetchUserData(req.body.id)
+        console.log("był zalogowany")
+        res.json({...data})
+
+    }
+});
 // Everything below to redo
 
 app.get("/scheaduleList", (req, res) => {
@@ -240,20 +247,6 @@ app.get("/userList", (req, res) => {
     res.send(tempUsers);
 });
 
-app.post("/fetchMatrix", async (req, res) => {
-    console.log(req.body)
-    if ((await findUser(req.body.id)).hasLoggedIn == false) {
-        createBlancMatrix(req.body.id)
-        changeFirstLoginStatus(req.body.id)
-        let data = await fetchUserData(req.body.id)
-        res.json({...data})
-    } else {
-        let data = await fetchUserData(req.body.id)
-        console.log("był zalogowany")
-        res.json({...data})
-
-    }
-});
 
 app.post("/addProposedShift", (req, res) => {
     console.log(req.body);
