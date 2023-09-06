@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { makeid } from "./utils";
+import { makeid, createYearMatrix, shapeYearMatrix } from "./utils";
 // moveToEnv
 let mongo_username = "greg1111";
 let mongo_password = "Rgbi5QPJQCck3eox";
@@ -13,20 +13,52 @@ const allCol = {
     userData: "UserData"
 }
 
+export async function changeFirstLoginStatus(id: string) {
+    const col = db.collection(allCol.users)
+    const filter = {id: id}
+    const update = { $set: { hasLoggedIn: true}}
+    const result = await col.updateOne(filter, update)
+    return result
+    // const que2
+}
+
 export async function createBlancMatrix(id: string) {
+    let currYear = new Date().getFullYear()
+    let tenYmatrix = []
+    for (let i = currYear; i < currYear +10; i++) {
+        console.log(i)
+        let oneYarray = createYearMatrix(i)
+        tenYmatrix.push(shapeYearMatrix(oneYarray, i))
+    }
     const col = db.collection(allCol.userData)
     let allUserGrafikData = {
-        user: id,
-        data: [1,2,3,4,5]
+        id: id,
+        data: tenYmatrix
     }
-    const q = col.insertOne({user: allUserGrafikData.user, data: allUserGrafikData.data})
+    const q = col.insertOne({...allUserGrafikData})
     const result = await q
 
     return({data: allUserGrafikData, result: result})
 }
 
+export async function findUser(id: string) {
+        const col = db.collection(allCol.users)
+        const que = col.findOne({id: id})
+        const res = await que
+        let passData = {
+            id: res?.id,
+            email: res?.email,
+            hasLoggedIn: res?.hasLoggedIn
+        }
+        return passData
+}
+
 export async function fetchUserData(id: string) {
     const col = db.collection(allCol.userData)
+    const querry = col.findOne({id: id})
+    const result = await querry
+    console.log(result)
+    return result
 }
 
 export async function findIfUserIsLoggedIn(id: string) {
@@ -58,11 +90,6 @@ export async function validateLogin(
     const user = await que;
     if (user?.password == password) {
         console.log(user);
-        let loginSuspensionUser = {
-            id: user.id,
-            dateLoggedIn: new Date(),
-            ip: ip,
-        };
         let isLoged = await findIfUserIsLoggedIn(user.id);
         console.log(isLoged);
         if (isLoged == false) {
@@ -108,6 +135,7 @@ export async function addMainUser(
             email: email,
             password: password,
             promoCode: promoCode,
+            hasLoggedIn: false
         });
         let res = await neqQue;
         if (res.acknowledged == true) {

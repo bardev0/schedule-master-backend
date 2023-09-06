@@ -192,5 +192,3 @@ export function createYearMatrix(yearNum: number) {
     //
     return yearMatix;
 }
-
-export { TDay };

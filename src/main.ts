@@ -6,7 +6,7 @@ import { TNotesObj } from "../../grafik/src/utils/types";
 import { makeid } from "./utils";
 import { createYearMatrix, shapeYearMatrix } from "./utils"
 
-import { addMainUser, createBlancMatrix, removeFromLogged, validateLogin } from "./connection";
+import { addMainUser, changeFirstLoginStatus, createBlancMatrix, fetchUserData, findUser, removeFromLogged, validateLogin } from "./connection";
 
 const PORT = 2345;
 let app: Express = express();
@@ -85,13 +85,21 @@ let exampleListGrafikow: Array<TGrafik> = [
         end: new Date("2023-12-31"),
     },
 ];
-// App przy zaladowaniu wyciągnie userName z Local storage i wysle do servera pytanie
-// app.post("/isUserLoggedIn")
+
+app.post("/findMainUser", async (req, res) => {
+    console.log(req.body)
+    console.log("app")
+    const result = await findUser(req.body.id)
+    res.json({...result})
+})
 
 app.post("/debug", async (req, res) => {
-    
-    res.json(await createBlancMatrix(req.body.id))
+    console.log(req.body)
+    let data = await fetchUserData(req.body.id)
+    res.json(data)
 })
+
+
 // ip adress jest ipv6
 app.post("/validateMainUser", async (req, res) => {
     const ipAddresses = req.socket.remoteAddress;
@@ -125,6 +133,8 @@ app.post("/addMainUser", async (req, res) => {
     console.log(status);
     res.json(status);
 });
+
+// Everything below to redo
 
 app.get("/scheaduleList", (req, res) => {
     console.log(req.body);
@@ -230,11 +240,20 @@ app.get("/userList", (req, res) => {
     res.send(tempUsers);
 });
 
-app.get("/fetchMatrix", (req, res) => {
-    console.log("matrix fetched");
-    res.json(mainUserArray);
+app.post("/fetchMatrix", async (req, res) => {
+    console.log(req.body)
+    if ((await findUser(req.body.id)).hasLoggedIn == false) {
+        createBlancMatrix(req.body.id)
+        changeFirstLoginStatus(req.body.id)
+        let data = await fetchUserData(req.body.id)
+        res.json({...data})
+    } else {
+        let data = await fetchUserData(req.body.id)
+        console.log("był zalogowany")
+        res.json({...data})
+
+    }
 });
-// do a whole modyfiy array logic
 
 app.post("/addProposedShift", (req, res) => {
     console.log(req.body);

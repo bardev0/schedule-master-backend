@@ -13,6 +13,10 @@ export type TLoginCredentials = {
     ipAdress?: string;
 };
 
+export type TMainUserData = TLoginCredentials & {
+    firstLogin: boolean
+}
+
 export type TRegisterData = {
     email: string;
     password: string;
