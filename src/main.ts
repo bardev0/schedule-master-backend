@@ -2,9 +2,10 @@ import { Express, Request, Response } from "express";
 import express = require("express");
 import cors = require("cors");
 import { TLoginCredentials, TRegisterData, TUserConsumer } from "./types";
-import { TNotesObj } from "../../grafik/src/utils/types";
 import { makeid } from "./utils";
 import { createYearMatrix, shapeYearMatrix } from "./utils"
+
+const router = require("./router")
 
 import { addMainUser, changeFirstLoginStatus, createBlancMatrix, fetchUserData, findUser, removeFromLogged, validateLogin } from "./connection";
 
@@ -12,6 +13,7 @@ const PORT = 2345;
 let app: Express = express();
 app.use(cors());
 app.use(express.json());
+app.use("/", router)
 
 const getNumberOfDay = (dateToCalculate: Date) => {
     let firstDay = new Date(dateToCalculate.getFullYear(), 0, 0);
@@ -86,38 +88,8 @@ let exampleListGrafikow: Array<TGrafik> = [
     },
 ];
 
-app.post("/findMainUser", async (req, res) => {
-    console.log(req.body)
-    console.log("app")
-    const result = await findUser(req.body.id)
-    res.json({...result})
-})
-
-app.post("/debug", async (req, res) => {
-    console.log(req.body)
-    let data = await findUser(req.body.id)
-    res.json(data)
-})
-
-
 // ip adress jest ipv6
-app.post("/validateMainUser", async (req, res) => {
-    const ipAddresses = req.socket.remoteAddress;
-    let credentials: TLoginCredentials = req.body;
-    let userStatus = await validateLogin(
-        credentials.email,
-        credentials.password,
-        ipAddresses
-    );
-    res.json(userStatus);
-});
 
-app.post("/removeLoggedUser", async (req, res) => {
-    console.log(req.body);
-    const result = await removeFromLogged(req.body.userId);
-    console.log(result);
-    res.json({ status: "user current login removed" });
-});
 
 app.post("/addMainUser", async (req, res) => {
 
@@ -174,7 +146,7 @@ app.post("/addSchedule", (req, res) => {
 
 app.post("/addNotes", (req, res) => {
     console.log("add notes reached");
-    let rdata: TNotesObj = req.body;
+    let rdata = req.body;
     console.log(rdata);
     let date = new Date(rdata.date);
     let monthIdx = date.getMonth();
