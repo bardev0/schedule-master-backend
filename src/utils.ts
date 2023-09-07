@@ -66,12 +66,21 @@ export function shapeYearMatrix(input: Array<any>, yearInp: number) {
             } else if (dA.length === 7) {
             } else if (dA.length < 7 && dA[0].dayNum == 1) {
                 let fillStart = 7 - dA.length;
-								let fillerStart = Array.from({length: fillStart}, (v, idx) => {day: "inactive"})
-								fillerStart.map((a) => {dA.unshift(a)})
+                let fillerStart = Array.from(
+                    { length: fillStart },
+                    (v, idx) => {
+                        day: "inactive";
+                    }
+                );
+                fillerStart.map((a) => {
+                    dA.unshift(a);
+                });
             } else if (dA.length < 7 && dA[0].dayNum != 1) {
                 let fillEnd = 7 - dA.length;
-								let fillerEnd = Array.from({length: fillEnd}, (v, idx) => {day: "inactive"});
-								fillerEnd.map((a) => dA.push(a))
+                let fillerEnd = Array.from({ length: fillEnd }, (v, idx) => {
+                    day: "inactive";
+                });
+                fillerEnd.map((a) => dA.push(a));
             }
 
             wA.push(dA);
@@ -82,14 +91,13 @@ export function shapeYearMatrix(input: Array<any>, yearInp: number) {
     return shapedArray;
 }
 
-
 /**
  * returns an array of arrays, first with offset, then chunks, and reminder
  * */
 export function separate_middle_chunks(
     input: Array<any>,
     chunkSize: number,
-    offset: number,
+    offset: number
 ): Array<any> {
     let temp = [...input];
     let returnArray: Array<any> = [];
@@ -157,13 +165,13 @@ export function createYearMatrix(yearNum: number) {
     let temp_month_id = 1;
     let first_month_weeks_array = Array.from(
         { length: get_amonunt_days_month(yearNum, 0) },
-        (_, index) => index + 1,
+        (_, index) => index + 1
     );
     let firstMonthArray = separate_middle_chunks(
         first_month_weeks_array,
         7,
         // getFirstDayOfMonth(yearNum, 1)
-        createOffset(getFirstDayOfMonth(yearNum, 1)),
+        createOffset(getFirstDayOfMonth(yearNum, 1))
     );
     yearMatix.push(firstMonthArray);
 
@@ -171,7 +179,7 @@ export function createYearMatrix(yearNum: number) {
         let temp_month_id = i;
         let next_month = Array.from(
             { length: get_amonunt_days_month(yearNum, i) },
-            (_, index) => index + 1,
+            (_, index) => index + 1
         );
         let deep1 = yearMatix.slice(-1);
         let deep2 = deep1.slice(-1);
@@ -182,7 +190,7 @@ export function createYearMatrix(yearNum: number) {
         let next_month_weeks_array = separate_middle_chunks(
             next_month,
             7,
-            last_month_offset,
+            last_month_offset
         );
         yearMatix.push(next_month_weeks_array);
     }

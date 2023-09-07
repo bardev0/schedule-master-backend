@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-		"build": "pnpm exec tsc",
+        "build": "pnpm exec tsc",
         "format": "prettier --write --config ./.prettierrc.json .",
         "dev": "pnpm exec nodemon ./src/main.ts"
     },

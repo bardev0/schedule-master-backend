@@ -5,4 +5,4 @@ module.exports = async (req: Request, res: Response) => {
     const result = await removeFromLogged(req.body.userId);
     console.log(result);
     res.json({ status: "user current login removed" });
-}
+};

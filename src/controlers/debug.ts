@@ -1,5 +1,5 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 
 module.exports = (req: Request, res: Response) => {
-    res.json({status: "debug"})
-}
+    res.json({ status: "debug" });
+};

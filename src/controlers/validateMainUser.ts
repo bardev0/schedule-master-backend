@@ -11,4 +11,4 @@ module.exports = async (req: Request, res: Response) => {
         ipAddresses
     );
     res.json(userStatus);
-}
+};

@@ -6,6 +6,12 @@ export type TUserConsumer = {
     email: string;
     hourly: number;
 };
+export type TGrafik = {
+    id: number;
+    status: "active" | "closed";
+    start: Date;
+    end: Date;
+};
 
 export type TLoginCredentials = {
     email: string;
@@ -14,8 +20,8 @@ export type TLoginCredentials = {
 };
 
 export type TMainUserData = TLoginCredentials & {
-    firstLogin: boolean
-}
+    firstLogin: boolean;
+};
 
 export type TRegisterData = {
     email: string;
@@ -25,10 +31,10 @@ export type TRegisterData = {
 };
 
 export type TDay = {
-    note? : string
+    note?: string;
     actualShifts?: Array<any>;
     isWorking: boolean;
-    proposedShifts?: Array<any>
+    proposedShifts?: Array<any>;
     offs?: Array<any>;
     day: string;
     dayNum: number;
@@ -39,11 +45,11 @@ export type TDay = {
 };
 
 export type TModShiftObj = {
-    user: string,
-    days: Array<{user: string, location: string}>
-}
+    user: string;
+    days: Array<{ user: string; location: string }>;
+};
 
 export type TShiftModData = {
-    user:string,
-    location: string
-}
+    user: string;
+    location: string;
+};
