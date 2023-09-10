@@ -2,9 +2,12 @@ import { MongoClient } from "mongodb";
 import { makeid, createYearMatrix, shapeYearMatrix } from "./utils";
 import { TRegisterData } from "./types";
 import { TGrafik } from "./types";
+import dotenv = require("dotenv")
 // moveToEnv
-let mongo_username = "greg1111";
-let mongo_password = "Rgbi5QPJQCck3eox";
+
+dotenv.config()
+let mongo_username = process.env.MONGOUSER
+let mongo_password = process.env.MONGOPASS
 const URI = `mongodb+srv://${mongo_username}:${mongo_password}@cluster0.nsckr5l.mongodb.net/?retryWrites=true&w=majority`;
 const cliet = new MongoClient(URI);
 const db = cliet.db("ShiftArtist");
