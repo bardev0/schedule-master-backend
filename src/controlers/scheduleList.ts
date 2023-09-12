@@ -23,6 +23,6 @@ let exampleListGrafikow = [
 ];
 
 module.exports = async (req: Request, res: Response) => {
-    console.log(req.body);
+    // console.log(req.body);
     res.json(await grabScheduleList(req.body.id));
 };

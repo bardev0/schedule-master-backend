@@ -9,6 +9,7 @@ const routes = {
     removeSchedule: "/removeSchedule",
     changeScheduleStatus: "/changeStatus",
     addSchedule: "/addSchedule",
+    addNotes: "/addNotes",
 };
 
 export default routes;

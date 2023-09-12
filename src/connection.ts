@@ -2,12 +2,11 @@ import { MongoClient } from "mongodb";
 import { makeid, createYearMatrix, shapeYearMatrix } from "./utils";
 import { TRegisterData } from "./types";
 import { TGrafik } from "./types";
-import dotenv = require("dotenv")
-// moveToEnv
+import dotenv = require("dotenv");
 
-dotenv.config()
-let mongo_username = process.env.MONGOUSER
-let mongo_password = process.env.MONGOPASS
+dotenv.config();
+let mongo_username = process.env.MONGOUSER;
+let mongo_password = process.env.MONGOPASS;
 const URI = `mongodb+srv://${mongo_username}:${mongo_password}@cluster0.nsckr5l.mongodb.net/?retryWrites=true&w=majority`;
 const cliet = new MongoClient(URI);
 const db = cliet.db("ShiftArtist");
@@ -18,6 +17,56 @@ const allCol = {
     userData: "UserData",
 };
 
+// not working
+export async function addNotes(opt: any) {
+    console.log(opt);
+    const col = db.collection(allCol.userData);
+    const q = await col.findOne({ id: opt.id });
+    let dateTemp = new Date(opt.date);
+    // const justData = q?.data
+    const year = q?.data[dateTemp.getFullYear()];
+
+    const tempYear: Array<any> = [];
+    year.map((months: any, idx: number) => {
+        let mA: Array<any> = [];
+
+        if (idx == dateTemp.getMonth()) {
+            months.map((week: any) => {
+                let wA: Array<any> = [];
+                week.map((day: any) => {
+                    if (day == null) {
+                        wA.push(day);
+                    } else if (day.dayNum == opt.dayNum) {
+                        day.note = opt.note;
+                        console.log(day);
+                        wA.push(day);
+                    } else {
+                        wA.push(day);
+                    }
+                });
+                mA.push(wA);
+            });
+        } else {
+            months.map((week: any) => {
+                let wA: Array<any> = [];
+                week.map((day: any) => {
+                    wA.push(day);
+                });
+                mA.push(wA);
+            });
+        }
+        tempYear.push(mA);
+    });
+    debugger;
+    console.log(tempYear);
+    let filter = { id: opt.id };
+    // justData[dateTemp.getFullYear()] = tempYear
+    let obj: any = {};
+    obj[`data.${dateTemp.getFullYear()}`] = tempYear;
+    console.log(obj);
+    let q2 = await col.updateOne(filter, { $set: obj });
+    console.log(q2);
+}
 export async function removeSchedule(id: string, grafikIndex: number) {
     const col = db.collection(allCol.userData);
     const querry = col.findOne({ id: id });
@@ -36,7 +85,7 @@ export async function addSchedule(id: string, start: any, end: any) {
     const col = db.collection(allCol.userData);
     const que = col.findOne({ id: id });
     const res = await que;
-    console.log(res);
+    // console.log(res);
     let lastIdOfG;
     if (res == null) {
     } else {
@@ -73,7 +122,7 @@ export async function changeScheduleStatus(id: string, grafikIndex: number) {
     const res = await que;
     let grafiki = res?.scheadules.default;
     let index = grafiki.findIndex((e: any) => e.id === grafikIndex);
-    console.log(grafiki[index]);
+    // console.log(grafiki[index]);
     const filer = { id: id };
     let replacement;
 }
@@ -98,7 +147,7 @@ export async function createBlancMatrix(id: string) {
     let currYear = new Date().getFullYear();
     let tenYmatrix: any = {};
     for (let i = currYear; i < currYear + 10; i++) {
-        console.log(i);
+        // console.log(i);
         let oneYarray = shapeYearMatrix(createYearMatrix(i), i);
         tenYmatrix[i] = oneYarray;
     }
@@ -127,7 +176,7 @@ export async function fetchUserData(id: string) {
     const col = db.collection(allCol.userData);
     const querry = col.findOne({ id: id });
     const result = await querry;
-    console.log(result);
+    // console.log(result);
     return result;
 }
 
@@ -135,7 +184,7 @@ export async function findIfUserIsLoggedIn(id: string) {
     const col = db.collection(allCol.loggedUsers);
     const query = col.findOne({ id: id });
     const res = await query;
-    console.log(res);
+    // console.log(res);
     if (res === null) {
         return false;
     } else {
@@ -159,9 +208,9 @@ export async function validateLogin(
     const que = col.findOne({ email: email });
     const user = await que;
     if (user?.password == password) {
-        console.log(user);
+        // console.log(user);
         let isLoged = await findIfUserIsLoggedIn(user.id);
-        console.log(isLoged);
+        // console.log(isLoged);
         if (isLoged == false) {
             let newCol = db.collection(allCol.loggedUsers);
             let res = newCol.insertOne({
@@ -169,7 +218,7 @@ export async function validateLogin(
                 dateLoggedIn: new Date(),
                 ip: ip,
             });
-            console.log("user add to logged users +" + res);
+            // console.log("user add to logged users +" + res);
         } else {
             let col = db.collection("LoggedUsers");
             col.findOneAndReplace(
@@ -177,7 +226,7 @@ export async function validateLogin(
                 { id: user.id, dateLoggedIn: new Date(), ip: ip }
                 // add valid login date + 1,5 month
             );
-            console.log("user replaced");
+            // console.log("user replaced");
         }
         // let newQ = newCol.insertO})
         return { status: "succes", id: user.id };

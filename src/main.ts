@@ -58,25 +58,25 @@ let tempUsers: Array<TUserConsumer> = [
     },
 ];
 
-app.post("/addNotes", (req, res) => {
-    console.log("add notes reached");
-    let rdata = req.body;
-    console.log(rdata);
-    let date = new Date(rdata.date);
-    let monthIdx = date.getMonth();
-    // console.log(mainUserArray[0][monthIdx])
-    mainUserArray[0][monthIdx].map((element: any) =>
-        element.map((day: any) => {
-            if (day !== undefined) {
-                if (day.yearNum == getNumberOfDay(date) + 1) {
-                    day.note = rdata.note;
-                    console.log(day);
-                }
-            }
-        })
-    );
-    res.json({ statsu: "ok" });
-});
+// app.post("/addNotes", (req, res) => {
+//     console.log("add notes reached");
+//     let rdata = req.body;
+//     console.log(rdata);
+//     let date = new Date(rdata.date);
+//     let monthIdx = date.getMonth();
+//     // console.log(mainUserArray[0][monthIdx])
+//     mainUserArray[0][monthIdx].map((element: any) =>
+//         element.map((day: any) => {
+//             if (day !== undefined) {
+//                 if (day.yearNum == getNumberOfDay(date) + 1) {
+//                     day.note = rdata.note;
+//                     console.log(day);
+//                 }
+//             }
+//         })
+//     );
+//     res.json({ statsu: "Aok" });
+// });
 
 // MOVE TO BACK
 

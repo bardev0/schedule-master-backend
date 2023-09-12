@@ -11,6 +11,7 @@ const scheduleList = require("./controlers/scheduleList");
 const removeSchedule = require("./controlers/removeSchedule");
 const changeScheduleStatus = require("./controlers/changeScheduleStatus"); // FINISH
 const addSchedule = require("./controlers/addSchedule");
+const addNotes = require("./controlers/addNotes");
 
 const router = Router();
 
@@ -24,5 +25,5 @@ router.post(routes.scheduleList, scheduleList);
 router.post(routes.removeSchedule, removeSchedule);
 router.post(routes.changeScheduleStatus, changeScheduleStatus);
 router.post(routes.addSchedule, addSchedule);
-
+router.post(routes.addNotes, addNotes);
 module.exports = router;
