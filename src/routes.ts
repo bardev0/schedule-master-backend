@@ -16,6 +16,9 @@ const routes = {
     findSingleSubUser: "/findSingleSubUser",
     modifySubUser: "/modifySubUser",
     addOffs: "/addOffs",
+    removeOffs: "/removeOffs",
+    addProposedShifts: "/addPropsedShifts",
+    removeProposedShifts: "/removeProposedShifts",
 };
 
 export default routes;

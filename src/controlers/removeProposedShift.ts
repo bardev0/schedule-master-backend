@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { iterateAndAddOffs } from "../connection";
+import { removeProposedShiftfromDB } from "../connection";
 
 module.exports = async (req: Request, res: Response) => {
     console.log(req.body);
-    let result = await iterateAndAddOffs(req.body);
+    let result = await removeProposedShiftfromDB(req.body);
     res.json(result);
 };

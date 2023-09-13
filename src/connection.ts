@@ -18,9 +18,138 @@ const allCol = {
     subUsers: "SubUsers",
 };
 
-// iterate over dates upstream
-// add options to param
-function modObj(obj: any, dateToMod: any, paramToMod: string) {
+function removeProposedShift(user: any, dayObj: any) {
+    if (dayObj.proposedShifts == undefined) {
+    } else {
+        let tproposedShifts = [...dayObj.proposedShifts];
+        let index = tproposedShifts.findIndex((e) => e == user);
+        tproposedShifts.splice(index, 1);
+
+        dayObj.proposedShifts = tproposedShifts;
+    }
+}
+
+function addPropsedShift(user: any, dayObj: any) {
+    let singlePShift = {
+        user: user,
+    };
+    if (dayObj.proposedShifts == undefined) {
+        dayObj.proposedShifts = [];
+        dayObj.proposedShifts.push(singlePShift);
+    } else {
+        let tproposedShifts = [...dayObj.proposedShifts];
+        tproposedShifts.push(singlePShift);
+        dayObj.proposedShifts = tproposedShifts;
+    }
+}
+export async function removeProposedShiftfromDB(data: any) {
+    // find main user
+    const col = db.collection(allCol.subUsers);
+    const q1 = await col.findOne({ id: data.user });
+    let parentUser = q1?.parent;
+    // access matrix
+    const col2 = db.collection(allCol.userData);
+    const q2 = await col2.findOne({ id: parentUser });
+
+    if (q2 !== null) {
+        data.days.map((date: any) => {
+            let temp = modObj(q2?.data, date, "removeProposedShift", data.user);
+            q2.data = temp;
+        });
+        const q3 = await col2.findOneAndUpdate(
+            { id: parentUser },
+            { $set: { data: q2.data } }
+        );
+        return q3;
+    }
+    // let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "czyMTestieWiezi", true);
+}
+
+export async function addProposedShiftToDB(data: any) {
+    // find main user
+    const col = db.collection(allCol.subUsers);
+    const q1 = await col.findOne({ id: data.user });
+    let parentUser = q1?.parent;
+    // access matrix
+    const col2 = db.collection(allCol.userData);
+    const q2 = await col2.findOne({ id: parentUser });
+
+    if (q2 !== null) {
+        data.days.map((date: any) => {
+            let temp = modObj(q2?.data, date, "addProposedShift", data.user);
+            q2.data = temp;
+        });
+        const q3 = await col2.findOneAndUpdate(
+            { id: parentUser },
+            { $set: { data: q2.data } }
+        );
+        return q3;
+    }
+    // let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "czyMTestieWiezi", true);
+}
+
+function addOff(user: any, dayObj: any) {
+    let singleOff = {
+        user: user,
+    };
+    if (dayObj.offs == undefined) {
+        dayObj.offs = [];
+        dayObj.offs.push(singleOff);
+    } else {
+        let tOffs = [...dayObj.offs];
+        tOffs.push(singleOff);
+        dayObj.offs = tOffs;
+    }
+}
+
+function removeOff(user: any, dayObj: any) {
+    if (dayObj.offs == undefined) {
+    } else {
+        let tOffs = [...dayObj.offs];
+        let index = tOffs.findIndex((e) => e == user);
+        tOffs.splice(index, 1);
+
+        dayObj.offs = tOffs;
+    }
+}
+
+export async function removeOfffromDB(data: any) {
+    // find main user
+    const col = db.collection(allCol.subUsers);
+    const q1 = await col.findOne({ id: data.user });
+    let parentUser = q1?.parent;
+    // access matrix
+    const col2 = db.collection(allCol.userData);
+    const q2 = await col2.findOne({ id: parentUser });
+
+    if (q2 !== null) {
+        data.days.map((date: any) => {
+            console.log(date);
+            let temp = modObj(q2?.data, date, "removeOffs", data.user);
+            q2.data = temp;
+        });
+        const q3 = await col2.findOneAndUpdate(
+            { id: parentUser },
+            { $set: { data: q2.data } }
+        );
+        return q3;
+    }
+    // let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "czyMTestieWiezi", true);
+}
+
+type logicParams =
+    | "addOffs"
+    | "removeOffs"
+    | "addProposedShift"
+    | "removeProposedShift";
+
+function modObj(
+    obj: any,
+    dateToMod: any,
+    logicToExec: logicParams,
+    user: string,
+    addParams?: any
+) {
     let czas = new Date(dateToMod);
     console.log(czas);
     const tempYear: any = [];
@@ -34,7 +163,25 @@ function modObj(obj: any, dateToMod: any, paramToMod: string) {
                     if (day == null) {
                         wA.push(day);
                     } else if (day.dayNum == czas.getDate()) {
-                        day.mod = paramToMod;
+                        switch (logicToExec) {
+                            case "addOffs":
+                                addOff(user, day);
+                                break;
+                            case "removeOffs": {
+                                removeOff(user, day);
+                                break;
+                            }
+                            case "addProposedShift": {
+                                addPropsedShift(user, day);
+                                break;
+                            }
+                            case "removeProposedShift": {
+                                removeProposedShift(user, day);
+                            }
+                            default: {
+                            }
+                        }
+
                         wA.push(day);
                     } else {
                         wA.push(day);
@@ -58,7 +205,7 @@ function modObj(obj: any, dateToMod: any, paramToMod: string) {
     return obj;
 }
 
-export async function addOffs(data: any) {
+export async function iterateAndAddOffs(data: any) {
     // find main user
     const col = db.collection(allCol.subUsers);
     const q1 = await col.findOne({ id: data.user });
@@ -67,8 +214,19 @@ export async function addOffs(data: any) {
     const col2 = db.collection(allCol.userData);
     const q2 = await col2.findOne({ id: parentUser });
 
-    let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "greg");
-    return newO;
+    if (q2 !== null) {
+        data.days.map((date: any) => {
+            console.log(date);
+            let temp = modObj(q2?.data, date, "addOffs", data.user);
+            q2.data = temp;
+        });
+        const q3 = await col2.findOneAndUpdate(
+            { id: parentUser },
+            { $set: { data: q2.data } }
+        );
+        return q3;
+    }
+    // let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "czyMTestieWiezi", true);
 }
 
 export async function modSubUser(newUser: any) {

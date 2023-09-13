@@ -5,6 +5,7 @@ export type TUserConsumer = {
     surname: string;
     email: string;
     hourly: number;
+    nick?: string;
 };
 export type TGrafik = {
     id: number;

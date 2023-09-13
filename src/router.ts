@@ -18,7 +18,9 @@ const subUsersList = require("./controlers/subUsersList");
 const findSingleSubUser = require("./controlers/findSingleSubUser");
 const modifySubUser = require("./controlers/modifySubUser");
 const addOffs = require("./controlers/addOffs");
-
+const removeOffs = require("./controlers/removeOffs");
+const addPropsedShifts = require("./controlers/addProposedShift");
+const removeProposedShifts = require("./controlers/removeProposedShift");
 const router = Router();
 
 router.get(routes.debug, debug);
@@ -38,4 +40,7 @@ router.post(routes.subUsersList, subUsersList);
 router.post(routes.findSingleSubUser, findSingleSubUser);
 router.post(routes.modifySubUser, modifySubUser);
 router.post(routes.addOffs, addOffs);
+router.post(routes.removeOffs, removeOffs);
+router.post(routes.addProposedShifts, addPropsedShifts);
+router.post(routes.removeProposedShifts, removeProposedShifts);
 module.exports = router;
