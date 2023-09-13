@@ -8,16 +8,103 @@ dotenv.config();
 let mongo_username = process.env.MONGOUSER;
 let mongo_password = process.env.MONGOPASS;
 const URI = `mongodb+srv://${mongo_username}:${mongo_password}@cluster0.nsckr5l.mongodb.net/?retryWrites=true&w=majority`;
-const cliet = new MongoClient(URI);
-const db = cliet.db("ShiftArtist");
+const client = new MongoClient(URI);
+const db = client.db("ShiftArtist");
 
 const allCol = {
     loggedUsers: "LoggedUsers",
     users: "Users",
     userData: "UserData",
+    subUsers: "SubUsers",
 };
 
-// not working
+// iterate over dates upstream
+// add options to param
+function modObj(obj: any, dateToMod: any, paramToMod: string) {
+    let czas = new Date(dateToMod);
+    console.log(czas);
+    const tempYear: any = [];
+    obj[czas.getFullYear()].map((months: any, idx: number) => {
+        let mA: Array<any> = [];
+
+        if (idx == czas.getMonth()) {
+            months.map((week: any) => {
+                let wA: Array<any> = [];
+                week.map((day: any) => {
+                    if (day == null) {
+                        wA.push(day);
+                    } else if (day.dayNum == czas.getDate()) {
+                        day.mod = paramToMod;
+                        wA.push(day);
+                    } else {
+                        wA.push(day);
+                    }
+                });
+                mA.push(wA);
+            });
+        } else {
+            months.map((week: any) => {
+                let wA: Array<any> = [];
+                week.map((day: any) => {
+                    wA.push(day);
+                });
+                mA.push(wA);
+            });
+        }
+        tempYear.push(mA);
+    });
+
+    obj[czas.getFullYear()] = tempYear;
+    return obj;
+}
+
+export async function addOffs(data: any) {
+    // find main user
+    const col = db.collection(allCol.subUsers);
+    const q1 = await col.findOne({ id: data.user });
+    let parentUser = q1?.parent;
+    // access matrix
+    const col2 = db.collection(allCol.userData);
+    const q2 = await col2.findOne({ id: parentUser });
+
+    let newO = modObj(q2?.data, "2023-01-01T00:00:00.000Z", "greg");
+    return newO;
+}
+
+export async function modSubUser(newUser: any) {
+    const col = db.collection(allCol.subUsers);
+    const que = await col.findOneAndReplace({ id: newUser.id }, newUser);
+    console.log(que);
+    return que;
+}
+
+export async function findSingleSubUser(subUserId: string) {
+    const col = db.collection(allCol.subUsers);
+    const que = await col.findOne({ id: subUserId });
+    return que;
+}
+
+export async function fetchSubUsersList(parentId: string) {
+    const col = db.collection(allCol.subUsers);
+    const que = await col.find({ parent: parentId }).toArray();
+    return que;
+}
+
+export async function removeSubUser(rmUserId: any) {
+    const col = db.collection(allCol.subUsers);
+    const que = await col.findOneAndDelete({ id: rmUserId });
+    return que;
+}
+
+export async function addSubUser(userObj: any) {
+    // check if sub user exists
+    const col = db.collection(allCol.subUsers);
+    const newSubUser = { ...userObj };
+    newSubUser.id = makeid(15);
+    const que = await col.insertOne(newSubUser);
+    return que;
+}
+
 export async function addNotes(opt: any) {
     console.log(opt);
     const col = db.collection(allCol.userData);
@@ -57,7 +144,6 @@ export async function addNotes(opt: any) {
         }
         tempYear.push(mA);
     });
-    debugger;
     console.log(tempYear);
     let filter = { id: opt.id };
     // justData[dateTemp.getFullYear()] = tempYear

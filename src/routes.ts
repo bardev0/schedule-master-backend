@@ -10,6 +10,12 @@ const routes = {
     changeScheduleStatus: "/changeStatus",
     addSchedule: "/addSchedule",
     addNotes: "/addNotes",
+    addSubUser: "/addSubUser",
+    removeSubUser: "/removeSubUser",
+    subUsersList: "/subUsersList",
+    findSingleSubUser: "/findSingleSubUser",
+    modifySubUser: "/modifySubUser",
+    addOffs: "/addOffs",
 };
 
 export default routes;
