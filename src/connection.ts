@@ -3,6 +3,7 @@ import { makeid, createYearMatrix, shapeYearMatrix } from "./utils";
 import { TRegisterData } from "./types";
 import { TGrafik } from "./types";
 import dotenv = require("dotenv");
+import * as bcrypt from "bcrypt"
 
 dotenv.config();
 let mongo_username = process.env.MONGOUSER;
@@ -451,14 +452,20 @@ export async function validateLogin(
     const col = db.collection(allCol.users);
     const que = col.findOne({ email: email });
     const user = await que;
-    if (user?.password == password) {
+
+    console.log(user?.password)
+    console.log(password)
+    let comp = await bcrypt.compare(password, user?.password)
+    
+    console.log(comp)
+    if (comp) {
         // console.log(user);
-        let isLoged = await findIfUserIsLoggedIn(user.id);
+        let isLoged = await findIfUserIsLoggedIn(user?.id);
         // console.log(isLoged);
         if (isLoged == false) {
             let newCol = db.collection(allCol.loggedUsers);
             let res = newCol.insertOne({
-                id: user.id,
+                id: user?.id,
                 dateLoggedIn: new Date(),
                 ip: ip,
             });
@@ -466,16 +473,16 @@ export async function validateLogin(
         } else {
             let col = db.collection("LoggedUsers");
             col.findOneAndReplace(
-                { id: user.id },
-                { id: user.id, dateLoggedIn: new Date(), ip: ip }
+                { id: user?.id },
+                { id: user?.id, dateLoggedIn: new Date(), ip: ip }
                 // add valid login date + 1,5 month
             );
             // console.log("user replaced");
         }
         // let newQ = newCol.insertO})
-        return { status: "succes", id: user.id };
+        return { status: "succes", id: user?.id };
     } else {
-        return { status: "failed" };
+        return { status: "wrong password" };
     }
 }
 
