@@ -3,10 +3,12 @@ import express = require("express");
 import cors = require("cors");
 import { TUserConsumer } from "./types";
 import { createYearMatrix, shapeYearMatrix } from "./utils";
-
+import dotenv = require("dotenv")
 const router = require("./router");
 
-const PORT = 2345;
+dotenv.config()
+
+const PORT = process.env.PORT 
 let app: Express = express();
 app.use(cors());
 app.use(express.json());

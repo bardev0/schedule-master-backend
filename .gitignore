@@ -4,3 +4,5 @@ node_modules
 build
 express
 .env
+mac-server
+linux-server

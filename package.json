@@ -6,7 +6,10 @@
     "scripts": {
         "build": "pnpm exec tsc",
         "format": "prettier --write --config ./.prettierrc.json .",
-        "dev": "pnpm exec nodemon ./src/main.ts"
+        "dev": "pnpm exec nodemon ./src/main.ts",
+				"pkg-mac": "pnpm run build && pnpm exec pkg --target node18-macos-arm64 -d ./build/main.js -o mac-server",
+				"pkg-linux": "pnpm run build && pnpm exec pkg --target node18-macos-arm64 -d ./build/main.js -o linux-server"
+				
     },
     "keywords": [],
     "author": "",
