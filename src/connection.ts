@@ -4,6 +4,7 @@ import { TRegisterData } from "./types";
 import { TGrafik } from "./types";
 import dotenv = require("dotenv");
 import * as bcrypt from "bcrypt"
+import { GrafkBody } from "../../grafik/src/utils/types";
 
 dotenv.config();
 let mongo_username = process.env.MONGOUSER;
@@ -18,6 +19,16 @@ const allCol = {
     userData: "UserData",
     subUsers: "SubUsers",
 };
+
+export async function grabOneGrafik(item: GrafkBody) {
+    const col = db.collection(allCol.userData)
+    const query = await col.findOne({id: item.user})
+    let data: Array<any> = query?.schedules.default 
+    let requestedGrafik = data.find( (element) => element.id == item.id )
+    
+    // potrzebuje zczytać kazdy dzień
+    // dodać go do array i potem przetworzyć w sensowne statsy ( mnóstwo roboty )
+}
 
 function removeProposedShift(user: any, dayObj: any) {
     if (dayObj.proposedShifts == undefined) {
@@ -497,6 +508,10 @@ export async function addMainUser(ob: TRegisterData) {
 
     if (res1 == undefined && res2 == undefined) {
         // idz dalej
+        let trialDate = new Date()
+            trialDate.setMonth(trialDate.getMonth() + 1)
+
+
         let neqQue = col.insertOne({
             id: newID,
             email: data.email,
@@ -504,6 +519,7 @@ export async function addMainUser(ob: TRegisterData) {
             promoCode: data.promoCode,
             companyName: data.companyName,
             hasLoggedIn: false,
+            subsciptionDate: trialDate,
         });
         let res = await neqQue;
         if (res.acknowledged == true) {

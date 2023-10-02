@@ -19,6 +19,7 @@ const routes = {
     removeOffs: "/removeOffs",
     addProposedShifts: "/addPropsedShifts",
     removeProposedShifts: "/removeProposedShifts",
+    grabOneGrafik: "/grabOneGrafik"
 };
 
 export default routes;

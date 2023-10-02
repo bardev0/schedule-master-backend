@@ -21,6 +21,7 @@ const addOffs = require("./controlers/addOffs");
 const removeOffs = require("./controlers/removeOffs");
 const addPropsedShifts = require("./controlers/addProposedShift");
 const removeProposedShifts = require("./controlers/removeProposedShift");
+const grabOneGrafik = require("./controlers/grabOneGrafik")
 const router = Router();
 
 router.get(routes.debug, debug);
@@ -43,4 +44,5 @@ router.post(routes.addOffs, addOffs);
 router.post(routes.removeOffs, removeOffs);
 router.post(routes.addProposedShifts, addPropsedShifts);
 router.post(routes.removeProposedShifts, removeProposedShifts);
+router.post(routes.grabOneGrafik, grabOneGrafik)
 module.exports = router;
